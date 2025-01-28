@@ -38,7 +38,7 @@
     <div class="terminal" id="terminal"></div>
     <div class="result" id="result"></div>
     <button onclick="hint()">Hint</button>
-    <button onclick="exit()">Abandon</button>
+    <button id="refresh" onclick="refresh()">Abandon</button>
     <script>
         let cursorX = 0, cursorY = 0;
         let lookupTable = {};
@@ -54,10 +54,15 @@
             })
             .then(response => response.json())
             .then(data => {
+                cursorX = 0;
+                cursorY = 0;
+                lookupTable = {};
                 originalArticle = data.original;
                 encodedArticle = data.encoded;
                 originalLines = wrapLineToConsoleWidth(ArticleToString(originalArticle));
                 lines = wrapLineToConsoleWidth(ArticleToString(encodedArticle));
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
                 displayArticle();
             });
         }
@@ -110,6 +115,9 @@
             if(isDecoded()) {
                 const resultDiv = document.getElementById('result');
                 resultDiv.innerHTML = `Article decoded !<br><a href="${originalArticle.url}">${originalArticle.url}</a>`;
+
+                const refreshBtn = document.getElementById('refresh');
+                refreshBtn.innerText = 'New game';
             }
         }
 
@@ -139,10 +147,9 @@
             }
         }
 
-        function exit() {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = 'Article not decoded !';
-            location.reload();
+        function refresh() {
+            //location.reload();
+            fetchArticle();
         }
 
         document.addEventListener('keydown', (event) => {
@@ -151,7 +158,7 @@
             else if (event.key === 'ArrowLeft') cursorX = Math.max(0, cursorX - 1);
             else if (event.key === 'ArrowRight') cursorX = Math.min(lines[cursorY].length - 1, cursorX + 1);
             else if (event.key.length === 1) {
-                const originalChar = lines[cursorY][cursorX];
+                const originalChar = originalLines[cursorY][cursorX];
                 lookupTable[originalChar] = event.key;
             }
             displayArticle();
