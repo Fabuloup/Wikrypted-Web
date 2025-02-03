@@ -131,7 +131,7 @@
         function hint() {
             for (let x = 0; x < encodedArticle.description.length; x++) {
                 const char = originalArticle.description[x];
-                if (encodedArticle.description[x] !== char && lookupTable[char] !== char) {
+                if ((lookupTable[char]===undefined && encodedArticle.description[x] !== char) || lookupTable[char] !== char) {
                     lookupTable[char] = char;
                     displayArticle();
                     return;
