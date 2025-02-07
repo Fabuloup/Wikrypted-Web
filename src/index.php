@@ -17,6 +17,7 @@
             margin: 0 auto;
             padding: 20px;
             border: 1px solid green;
+            overflow-wrap: break-word;
         }
         .cursor {
             background-color: gray;
@@ -156,6 +157,31 @@
             }
             displayArticle();
         });
+        function isMobile() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        if (isMobile()) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.style.position = 'absolute';
+            input.style.opacity = 0;
+            document.body.appendChild(input);
+
+            input.addEventListener('input', (event) => {
+            const char = event.target.value;
+            if (char.length === 1) {
+                const originalChar = lines[cursorY][cursorX];
+                lookupTable[originalChar] = char;
+                displayArticle();
+            }
+            input.value = '';
+            });
+
+            document.addEventListener('click', () => {
+            input.focus();
+            });
+        }
 
         fetchArticle();
     </script>
