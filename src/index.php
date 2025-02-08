@@ -6,6 +6,11 @@
     <link rel="icon" href="favicon.png" type="image/png">
     <title>Decode Wikipedia Article</title>
     <style>
+        @media (max-width: 700px) {
+            html {
+                font-size: 20px;
+            }
+        }
         body {
             background-color: black;
             color: green;
@@ -13,7 +18,7 @@
             font-size: 1rem;
         }
         .terminal {
-            width: 80%;
+            width: 85%;
             margin: 0 auto;
             padding: 20px;
             border: 1px solid green;
@@ -173,20 +178,21 @@
             input.type = 'text';
             input.style.position = 'absolute';
             input.style.opacity = 0;
+            input.setAttribute("autocapitalize", "none");
             document.body.appendChild(input);
 
             input.addEventListener('input', (event) => {
-            const char = event.target.value;
-            if (char.length === 1) {
-                const originalChar = lines[cursorY][cursorX];
-                lookupTable[originalChar] = char;
-                displayArticle();
-            }
-            input.value = '';
+                const char = event.target.value;
+                if (char.length === 1) {
+                    const originalChar = originalLines[cursorY][cursorX];
+                    lookupTable[originalChar] = char;
+                    displayArticle();
+                }
+                input.value = '';
             });
 
             document.addEventListener('click', () => {
-            input.focus();
+                input.focus({ preventScroll: true });
             });
         }
 
