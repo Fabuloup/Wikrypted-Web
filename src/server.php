@@ -97,7 +97,7 @@ function fetchWikipediaArticle($url) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $url = getRandomArticleUrl();
+    $url = "https:" . getRandomArticleUrl();
 
     $articles = [];
 
