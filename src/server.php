@@ -1,6 +1,7 @@
 <?php
 error_reporting(0);
-ini_set('default_socket_timeout', 1);
+ini_set('default_socket_timeout', 10);
+ini_set("user_agent","wikrypted-web/1.0 (https://fabien-richard.fr)");
 
 $articlesFile = 'articles.json';
 
@@ -46,18 +47,33 @@ class Krypter {
     }
 }
 
+function getWikipediaContent($url) {
+    $options = [
+        'http' => [
+            'method' => 'GET',
+            'header' => "User-Agent: wikrypted-web/1.0 (https://fabien-richard.fr)\r\n"
+        ]
+    ];
+    $context = stream_context_create($options);
+    return file_get_contents($url, false, $context);
+}
+
 function getRandomArticleUrl() {
     $url = 'https://en.wikipedia.org/wiki/Special:Random';
-    $content = file_get_contents($url);
-    preg_match('/<link rel="canonical" href="(.*?)"/', $content, $matches);
-    return $matches[1];
+    
+    $headers = get_headers($url, 1);
+    return $headers['location'] ?? false;
 }
 
 function fetchWikipediaArticle($url) {
     global $articlesFile;
-    $apiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' . basename(parse_url($url, PHP_URL_PATH));
-    $content = file_get_contents($apiUrl);
     $articles = [];
+    $content = false;
+
+    if($url !== false) {
+        $apiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' . basename(parse_url($url, PHP_URL_PATH));
+        $content = file_get_contents($apiUrl);
+    }
 
     if($content === false && file_exists($articlesFile)) {
         $articles = json_decode(file_get_contents($articlesFile), true);
